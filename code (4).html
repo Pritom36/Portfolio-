@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pritom Bhowmik - Full Stack Forge</title>
+
+    <!-- Open Source Libraries & Resources -->
+    <!-- Font Awesome (for icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Google Fonts (Optional - Using system fonts primarily for simplicity) -->
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet"> -->
+
+    <!-- model-viewer Component -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
+
+    <style>
+        /* --- Global Styles & Variables --- */
+        :root {
+            --bg-color: #1a1d2d; /* Deeper Navy/Purple */
+            --bg-color-lighter: #2a2d40;
+            --text-color: #e0e5f0; /* Soft slightly bluish white */
+            --primary-accent: #ff8c00; /* Vibrant Orange - Fire Core */
+            --secondary-accent: #e65c00; /* Deeper Burnt Orange */
+            --glow-color: rgba(255, 140, 0, 0.5); /* Fire Glow */
+            --card-bg: rgba(42, 45, 64, 0.7); /* Semi-transparent card bg */
+            --border-color: rgba(255, 140, 0, 0.3);
+            --font-heading: 'Merriweather', 'Georgia', serif; /* Use if loading Google Font */
+             /* --font-heading: 'Georgia', serif; */ /* System font fallback */
+            --font-body: 'Lato', 'Helvetica Neue', sans-serif; /* Use if loading Google Font */
+             /* --font-body: 'Helvetica Neue', sans-serif; */ /* System font fallback */
+            --container-width: 1140px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px; /* Base font size */
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        .container {
+            width: 90%;
+            max-width: var(--container-width);
+            margin: 0 auto; /* Center content */
+            padding: 20px 0;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-heading);
+            color: var(--primary-accent);
+            margin-bottom: 0.7em;
+            line-height: 1.3;
+            font-weight: 700;
+        }
+
+        h1 { font-size: clamp(2.5rem, 6vw, 3.8rem); text-shadow: 2px 2px 5px rgba(0,0,0,0.7); }
+        h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); text-align: center; margin-bottom: 1.5em; }
+        h3 { font-size: clamp(1.3rem, 3vw, 1.6rem); color: var(--primary-accent); margin-bottom: 0.5em;}
+        h4 { font-size: clamp(1.1rem, 2.5vw, 1.3rem); color: var(--text-color); margin-bottom: 0.4em; }
+
+
+        a {
+            color: var(--primary-accent);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: var(--secondary-accent);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 4px; /* Slight rounding */
+        }
+
+        p {
+            margin-bottom: 1.2em;
+            font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+            color: rgba(224, 229, 240, 0.85); /* Slightly dimmer than pure text */
+        }
+
+        /* --- Utilities --- */
+        .text-center { text-align: center; }
+        .section-padding { padding: clamp(40px, 8vh, 80px) 0; }
+        .highlight { color: var(--primary-accent); font-weight: bold; }
+
+
+        /* --- Header & Navigation --- */
+        .main-header {
+            background-color: rgba(26, 29, 45, 0.8); /* Slightly darker than body */
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000; /* Above fire */
+            backdrop-filter: blur(8px); /* Frosted glass */
+            border-bottom: 1px solid rgba(255, 140, 0, 0.15);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .main-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: clamp(1.5rem, 3vw, 1.9rem);
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .logo .highlight {
+            display: inline-block; /* Prevents wrap */
+            margin-left: 0.1em;
+        }
+        .logo i { /* Optional icon */
+             font-size: 0.8em;
+             margin-right: 0.3em;
+             color: var(--primary-accent);
+        }
+
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .main-nav li {
+            margin-left: clamp(10px, 2vw, 25px);
+        }
+         .main-nav li:first-child { margin-left: 0; }
+
+        .main-nav a {
+            font-weight: 700; /* Bold nav links */
+            font-family: var(--font-body);
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+        .main-nav a:hover, .main-nav a.active { /* Add active class via JS if needed */
+            background-color: var(--border-color);
+            color: var(--text-color);
+        }
+
+        /* --- Mobile Nav Toggle (Basic structure) --- */
+        .nav-toggle {
+             display: none; /* Hidden by default */
+             background: none;
+             border: none;
+             color: var(--text-color);
+             font-size: 1.8rem;
+             cursor: pointer;
+        }
+
+
+        /* --- Hero Section --- */
+        .hero {
+            min-height: 90vh; /* Almost full viewport */
+            display: flex;
+            flex-direction: column; /* Stack content and fire area */
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            padding: 60px 20px 120px 20px; /* Extra padding bottom for fire */
+            background-color: var(--bg-color); /* Base color */
+             /* Add the parallax background */
+            background-image: url('https://via.placeholder.com/1920x1080/1a1d2d/2a2d40?text=Subtle+Code+Texture'); /* Replace with subtle tech/abstract bg */
+            background-size: cover;
+            background-attachment: fixed; /* Creates basic parallax */
+            background-position: center center;
+        }
+        /* Overlay to darken background */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(26, 29, 45, 0.6), rgba(26, 29, 45, 0.95));
+            z-index: 1;
+        }
+
+
+        .hero-content {
+            position: relative;
+            z-index: 10; /* Above fire and overlay */
+            max-width: 800px;
+             margin-bottom: 2rem; /* Space above fire visually */
+        }
+
+        .hero h1 {
+            margin-bottom: 0.3em;
+        }
+
+        .hero p.subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            margin-bottom: 1.8em;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            color: rgba(224, 229, 240, 0.9);
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+         .hero .cta-button {
+            display: inline-block;
+            padding: 14px 35px;
+            background: linear-gradient(to right, var(--secondary-accent), var(--primary-accent));
+            color: #fff; /* White text on button */
+            font-weight: bold;
+            font-family: var(--font-body);
+            font-size: clamp(1rem, 2vw, 1.15rem);
+            border-radius: 30px; /* Pill shape */
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            letter-spacing: 1px;
+         }
+         .hero .cta-button:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(255, 140, 0, 0.4);
+         }
+
+
+        /* --- Fire Display Area (Positioned within Hero, lower) --- */
+        .fire-display-area {
+            position: absolute;
+            bottom: -60px; /* Overlap bottom edge */
+            left: 50%;
+            transform: translateX(-50%) scale(1);
+            width: 400px;
+            height: 400px;
+            z-index: 5; /* Above overlay, below content */
+            pointer-events: none;
+            filter: brightness(1);
+            /* border: 1px dashed white; */ /* Debug */
+        }
+
+
+        /* --- Main Content Sections --- */
+        main {
+          flex-grow: 1;
+          background-color: var(--bg-color-lighter); /* Slightly lighter bg for content */
+          z-index: 2; /* Ensure content scrolls over fixed hero bg */
+          position: relative; /* Needed for z-index stacking */
+        }
+
+        section {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        section:last-of-type { border-bottom: none; }
+
+
+        /* --- About Section --- */
+        #about .container {
+             display: flex;
+             flex-wrap: wrap;
+             gap: clamp(30px, 5vw, 60px);
+             align-items: center;
+        }
+        .about-text { flex: 1 1 55%; min-width: 300px;}
+        .about-image {
+             flex: 1 1 35%;
+             max-width: 350px;
+             margin: 0 auto;
+             border-radius: 50%; /* Circular image */
+             overflow: hidden;
+             border: 5px solid var(--border-color);
+             box-shadow: 0 0 25px var(--glow-color);
+        }
+        .about-image img { border-radius: 50%; }
+
+        /* --- Skills Section --- */
+        #skills { background-color: rgba(0,0,0,0.1); } /* Subtle difference */
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .skill-category {
+            background-color: var(--card-bg);
+            padding: 25px 30px;
+            border-radius: 8px;
+            flex: 1 1 300px; /* Grow, shrink, base width */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(5px);
+        }
+        .skill-category h3 {
+            text-align: center;
+            margin-bottom: 1.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .skill-category h3 i { color: var(--text-color); font-size: 0.9em; }
+
+        .skills-list {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center; /* Center icons */
+        }
+        .skills-list li {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+            width: 80px; /* Fixed width for alignment */
+            transition: transform 0.2s ease;
+        }
+        .skills-list li:hover {
+            transform: translateY(-5px);
+        }
+        .skills-list i {
+            font-size: 2.5rem; /* Icon size */
+            color: var(--primary-accent);
+            background: linear-gradient(145deg, var(--bg-color-lighter), var(--bg-color));
+            padding: 15px;
+            border-radius: 50%;
+            width: 60px; height: 60px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 0 2px 5px rgba(0,0,0,0.2);
+            transition: color 0.3s ease, box-shadow 0.3s ease;
+        }
+         .skills-list li:hover i {
+            color: var(--secondary-accent);
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.3), 0 0 15px var(--glow-color);
+         }
+
+
+        /* --- 3D Model Section (Simple integration) --- */
+        #tech-showcase { text-align: center; }
+        model-viewer {
+            width: 100%;
+            max-width: 400px; /* Control size */
+            height: 350px;
+            margin: 1em auto;
+            border-radius: 8px;
+            background-color: transparent; /* Let section bg show */
+            /* Add custom styling for model viewer if needed */
+             --mv-progress-bar-color: var(--primary-accent);
+        }
+
+
+        /* --- Projects Section --- */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 35px;
+            perspective: 1000px; /* Perspective for 3D hover */
+        }
+
+        .project-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            position: relative; /* For absolute links */
+            transform-style: preserve-3d; /* Enable 3D transforms for children */
+        }
+        .project-card:hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(-3deg) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--glow-color);
+        }
+
+        .project-card-image {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+         .project-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .project-card:hover .project-card-image img {
+            transform: scale(1.08);
+        }
+        /* Optional overlay on image */
+        .project-card-image::after {
+            content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+            background: linear-gradient(to top, rgba(26, 29, 45, 0.7), transparent);
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+        .project-card:hover .project-card-image::after { opacity: 1;}
+
+
+        .project-card-content {
+            padding: 20px 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .project-card-content h4 { margin-top: 0; color: var(--primary-accent); }
+        .project-card-content p {
+             font-size: 0.9rem;
+             color: rgba(224, 229, 240, 0.8);
+             flex-grow: 1; /* Push tech/links down */
+             margin-bottom: 15px;
+        }
+
+        .project-tech {
+             margin-bottom: 15px;
+        }
+        .project-tech span {
+            display: inline-block;
+            background-color: rgba(255, 140, 0, 0.15);
+            color: var(--primary-accent);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 15px;
+            margin-top: auto; /* Pushes to bottom */
+        }
+        .project-links a {
+            color: var(--text-color);
+            font-size: 1.3rem;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .project-links a:hover {
+            color: var(--primary-accent);
+            transform: scale(1.1);
+        }
+
+        /* --- Contact Section --- */
+        #contact { background-color: rgba(0,0,0,0.1); }
+        .contact-form {
+            max-width: 700px;
+            margin: 20px auto;
+            background-color: var(--card-bg);
+            padding: clamp(25px, 5vw, 40px);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+             backdrop-filter: blur(5px);
+             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-accent);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid rgba(224, 229, 240, 0.2);
+            background-color: rgba(26, 29, 45, 0.8); /* Darker input */
+            color: var(--text-color);
+            border-radius: 5px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+         .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 3px var(--glow-color);
+         }
+         .input-group textarea { min-height: 130px; resize: vertical; }
+
+         .contact-form button[type="submit"] {
+             display: block;
+             width: 100%;
+             padding: 12px 25px;
+             background: linear-gradient(to right, var(--secondary-accent), var(--primary-accent));
+             color: #fff;
+             font-weight: bold;
+             font-size: 1.1rem;
+             border-radius: 5px;
+             border: none;
+             cursor: pointer;
+             transition: all 0.3s ease;
+             box-shadow: 0 4px 10px rgba(255, 140, 0, 0.2);
+             margin-top: 10px;
+         }
+          .contact-form button[type="submit"]:hover {
+             transform: translateY(-2px);
+             box-shadow: 0 6px 15px rgba(255, 140, 0, 0.3);
+          }
+
+        /* --- Footer --- */
+        .main-footer {
+            background-color: var(--bg-color); /* Match darkest bg */
+            color: rgba(224, 229, 240, 0.6);
+            text-align: center;
+            padding: 30px 0;
+            margin-top: auto; /* Push to bottom */
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+         .main-footer p { font-size: 0.9rem; margin-bottom: 0.5em; }
+         .footer-links a {
+             color: rgba(224, 229, 240, 0.6);
+             margin: 0 10px;
+             font-size: 1.4rem;
+         }
+          .footer-links a:hover {
+             color: var(--primary-accent);
+          }
+          .attribution {
+            font-size: 0.75rem;
+            margin-top: 15px;
+            opacity: 0.5;
+          }
+          .attribution a { color: inherit; }
+
+
+        /* --- START: Anime Fire CSS (No changes needed here) --- */
+        /* ... (Paste the *entire* Fire CSS block from the previous examples here) ... */
+        /* ... It starts with .log-stack and ends with the last @keyframes rule ... */
+        /* --- Logs --- */
+        .log-stack { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 200px; height: 60px; }
+        .log { position: absolute; height: 35px; background: linear-gradient(to bottom, #6b4f2e, #4a371f); border-radius: 4px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6); border: 1px solid #3a2d1a; }
+        .log1 { width: 180px; bottom: 0; left: 10px; z-index: 1; background: linear-gradient(to bottom, rgba(40, 20, 5, 0.8) 0%, rgba(40, 20, 5, 0.6) 10%, #6b4f2e 30%, #4a371f 100%); }
+        .log2 { width: 160px; bottom: 20px; left: 20px; transform: rotate(-3deg); z-index: 0; }
+        /* --- Fire Container --- */
+        .fire-container { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 120px; height: 250px; filter: contrast(1.1) brightness(1.1); }
+        /* --- Embers --- */
+        .embers { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100px; height: 20px; z-index: 5; }
+        .ember { position: absolute; width: 5px; height: 5px; background-color: #ffae00; border-radius: 50%; box-shadow: 0 0 5px 2px rgba(255, 165, 0, 0.8); animation: pulse 1.5s infinite ease-in-out alternate; }
+        .e1 { bottom: 15px; left: 30%; animation-delay: 0s; } .e2 { bottom: 10px; left: 50%; animation-delay: 0.3s; width: 6px; height: 6px;} .e3 { bottom: 18px; left: 65%; animation-delay: 0.6s; } .e4 { bottom: 12px; left: 40%; animation-delay: 0.9s; }
+        @keyframes pulse { 0% { opacity: 0.6; transform: scale(0.8); box-shadow: 0 0 3px 1px rgba(255, 165, 0, 0.6);} 100% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 8px 3px rgba(255, 180, 50, 0.9);} }
+        /* --- Fire Base --- */
+        .fire { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 100%; height: 100%; filter: blur(1px); }
+        /* --- Flames --- */
+        .flame { position: absolute; bottom: 0; left: 50%; width: 25px; height: 80px; border-radius: 50% 50% 20% 20% / 80% 80% 30% 30%; background: radial-gradient(ellipse at bottom, #ffffff 0%, #ffeeaacc 20%, #ffaa00cc 50%, #ff4500aa 80%, rgba(50, 0, 0, 0) 100%); transform-origin: bottom center; opacity: 0.85; z-index: 10; box-shadow: 0 0 15px 5px rgba(255, 165, 0, 0.4); animation-name: flicker1; animation-duration: 1s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+        .flame::before, .flame::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); border-radius: inherit; background: inherit; opacity: 0.6; z-index: -1; filter: blur(2px); }
+        .flame::before { width: 80%; height: 70%; animation: flicker2 1.2s infinite ease-in-out reverse; animation-delay: inherit; }
+        .flame::after { width: 60%; height: 50%; transform: translateX(-50%) skewX(10deg); animation: flicker3 0.8s infinite ease-out; animation-delay: inherit; opacity: 0.4; }
+        .f1 { height: 90px; width: 30px; transform: translateX(-60%); animation-duration: 0.9s; animation-delay: 0s; } .f2 { height: 70px; width: 20px; transform: translateX(-40%); animation-duration: 1.1s; animation-delay: 0.2s; animation-name: flicker2; } .f3 { height: 110px; width: 35px; transform: translateX(-50%); animation-duration: 0.8s; animation-delay: 0.1s; z-index: 11; background: radial-gradient(ellipse at bottom, #ffffff 0%, #ffffcc 20%, #ffcc00cc 50%, #ff6600aa 80%, rgba(50,0,0,0) 100%); } .f4 { height: 80px; width: 28px; transform: translateX(-70%); animation-duration: 1.2s; animation-delay: 0.3s; animation-name: flicker3; } .f5 { height: 65px; width: 22px; transform: translateX(-30%); animation-duration: 0.7s; animation-delay: 0.4s; } .f6 { height: 95px; width: 26px; transform: translateX(-55%); animation-duration: 1.0s; animation-delay: 0.5s; z-index: 9; opacity: 0.7; } .f7 { height: 75px; width: 20px; transform: translateX(-45%); animation-duration: 1.3s; animation-delay: 0.15s; animation-name: flicker2; } .f8 { height: 85px; width: 30px; transform: translateX(-65%); animation-duration: 0.85s; animation-delay: 0.25s; }
+        /* --- Sparks --- */
+        .sparks { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 80px; height: 200px; pointer-events: none; z-index: 15; }
+        .spark { position: absolute; bottom: 0; width: 3px; height: 3px; background-color: #ffffaa; border-radius: 50%; box-shadow: 0 0 5px 1px #ffffaa; opacity: 0; animation: fly 1.5s ease-out infinite; }
+        .s1 { left: 40%; animation-delay: 0s; } .s2 { left: 60%; animation-delay: 0.5s; animation-duration: 1.8s; } .s3 { left: 30%; animation-delay: 1.0s; } .s4 { left: 70%; animation-delay: 1.3s; animation-duration: 1.2s; width: 4px; height: 4px; } .s5 { left: 50%; animation-delay: 0.2s; animation-duration: 2s;}
+        @keyframes fly { 0% { transform: translateY(0) scale(1); opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(-180px) scale(0.5); opacity: 0; } }
+        @keyframes flicker1 { 0%, 100% { transform: translateX(-50%) scaleY(1) rotate(-2deg); opacity: 0.8; } 25% { transform: translateX(-55%) scaleY(1.4) scaleX(0.9) rotate(5deg) skewX(-5deg); opacity: 0.9; } 50% { transform: translateX(-45%) scaleY(0.9) scaleX(1.1) rotate(-5deg); opacity: 0.7; } 75% { transform: translateX(-50%) scaleY(1.3) scaleX(0.8) rotate(3deg) skewX(5deg); opacity: 1; } }
+        @keyframes flicker2 { 0%, 100% { transform: translateX(-50%) scaleY(1) skewX(0); opacity: 0.7; } 33% { transform: translateX(-52%) scaleY(1.1) skewX(15deg); opacity: 0.9; } 66% { transform: translateX(-48%) scaleY(0.9) skewX(-15deg); opacity: 1; } }
+        @keyframes flicker3 { 0%, 100% { transform: translateX(-50%) scale(1) rotate(1deg); border-radius: 50% 50% 20% 20% / 80% 80% 30% 30%; opacity: 0.8; } 50% { transform: translateX(-50%) scale(1.1, 0.8) rotate(-1deg); border-radius: 40% 60% 30% 30% / 70% 90% 20% 20%; opacity: 1; } }
+        /* --- END: Anime Fire CSS --- */
+
+
+        /* --- Responsive Design --- */
+        @media (max-width: 992px) {
+            .container { width: 92%; }
+            .fire-display-area {
+                transform: translateX(-50%) scale(0.9);
+                bottom: -70px;
+            }
+            .about-text { flex-basis: 100%; order: 2; text-align: center;} /* Stack About text below image */
+            .about-image { flex-basis: 100%; order: 1; margin-bottom: 30px; max-width: 280px;}
+        }
+
+        @media (max-width: 768px) {
+             /* Mobile Nav Styles */
+            .main-nav {
+                display: none; /* Hide normal nav */
+                position: absolute;
+                top: 100%; /* Position below header */
+                left: 0;
+                width: 100%;
+                background-color: rgba(26, 29, 45, 0.95);
+                padding: 20px 0;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+            }
+             .main-nav.active { display: block; } /* Show when active */
+            .main-nav ul { flex-direction: column; align-items: center; }
+            .main-nav li { margin: 10px 0; margin-left: 0;}
+            .nav-toggle { display: block; /* Show hamburger */ } /* Show hamburger */
+
+             .hero { min-height: 80vh; padding-bottom: 100px;}
+             .fire-display-area {
+                transform: translateX(-50%) scale(0.75);
+                bottom: -60px;
+                width: 350px; height: 350px;
+             }
+             .projects-grid { grid-template-columns: 1fr; /* Single column */ }
+             .skill-category { flex-basis: 100%; } /* Full width categories */
+             #tech-showcase { padding: 20px 0; }
+             model-viewer { height: 300px; }
+        }
+
+        @media (max-width: 480px) {
+            html { font-size: 15px; } /* Slightly smaller base font */
+             .hero { min-height: 75vh; padding-bottom: 80px;}
+            .fire-display-area {
+                transform: translateX(-50%) scale(0.6);
+                bottom: -50px;
+                width: 300px; height: 300px;
+            }
+             .skills-list i { font-size: 2rem; width: 50px; height: 50px; padding: 12px;}
+             .skills-list li { width: 70px; font-size: 0.75rem;}
+             .project-card-image { height: 180px; }
+             .project-card-content { padding: 15px 20px; }
+             model-viewer { height: 250px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container">
+            <a href="#home" class="logo">
+                 <!-- <i class="fas fa-fire"></i> --> <!-- Optional icon -->
+                Pritom <span class="highlight">Bhowmik</span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle Navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav class="main-nav" id="mainNav">
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <!-- Parallax background is applied via CSS -->
+            <div class="hero-content">
+                <h1>Forging Digital Experiences</h1>
+                <p class="subtitle">I'm Pritom Bhowmik, a passionate Full Stack Developer crafting dynamic, user-centric web applications from concept to deployment.</p>
+                <a href="#projects" class="cta-button">View My Work</a>
+            </div>
+
+            <!-- Fire Animation Area - Positioned Below Content -->
+            <div class="fire-display-area">
+                <div class="log-stack"> <div class="log log1"></div> <div class="log log2"></div> </div>
+                <div class="fire-container">
+                    <div class="embers"> <div class="ember e1"></div> <div class="ember e2"></div> <div class="ember e3"></div> <div class="ember e4"></div> </div>
+                    <div class="fire"> <div class="flame f1"></div> <div class="flame f2"></div> <div class="flame f3"></div> <div class="flame f4"></div> <div class="flame f5"></div> <div class="flame f6"></div> <div class="flame f7"></div> <div class="flame f8"></div> </div>
+                    <div class="sparks"> <div class="spark s1"></div> <div class="spark s2"></div> <div class="spark s3"></div> <div class="spark s4"></div> <div class="spark s5"></div> </div>
+                </div>
+            </div>
+            <!-- End Fire Animation Area -->
+        </section>
+
+        <section id="about" class="section-padding">
+            <div class="container">
+                <div class="about-text">
+                    <h2>About Me</h2>
+                    <p>Hello! I'm <span class="highlight">Pritom Bhowmik</span>, a dedicated Full Stack Web Developer fueled by a passion for building innovative and efficient web solutions. My journey in tech started with a spark of curiosity and has grown into a full-blown fire for creating seamless user experiences and robust backend systems.</p>
+                    <p>I thrive in the dynamic world of web development, constantly learning and adapting to new technologies. From designing intuitive front-end interfaces with <span class="highlight">React</span> and <span class="highlight">Vue</span> to architecting scalable backend APIs with <span class="highlight">Node.js</span> and managing databases like <span class="highlight">PostgreSQL</span> and <span class="highlight">MongoDB</span>, I love tackling challenges across the entire stack.</p>
+                     <p>My goal is to not just write code, but to forge digital tools that solve real-world problems and delight users. Let's build something amazing together!</p>
+                </div>
+                <div class="about-image">
+                     <!-- Replace with your actual photo -->
+                    <img src="https://via.placeholder.com/350x350/2a2d40/e0e5f0?text=Pritom+B." alt="Pritom Bhowmik">
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="section-padding">
+            <div class="container">
+                <h2>My Tech Stack <span class="highlight">&amp;</span> Tools</h2>
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <h3><i class="fas fa-desktop"></i> Frontend</h3>
+                        <ul class="skills-list">
+                            <li><i class="fab fa-html5"></i> HTML5</li>
+                            <li><i class="fab fa-css3-alt"></i> CSS3</li>
+                            <li><i class="fab fa-js-square"></i> JavaScript</li>
+                            <li><i class="fab fa-react"></i> React</li>
+                            <li><i class="fab fa-vuejs"></i> Vue.js</li>
+                            <li><i class="fab fa-bootstrap"></i> Bootstrap</li>
+                            <li><i class="fab fa-sass"></i> Sass/SCSS</li>
+                            <li><i class="fas fa-paint-brush"></i> Tailwind</li>
+                        </ul>
+                    </div>
+                     <div class="skill-category">
+                        <h3><i class="fas fa-server"></i> Backend</h3>
+                        <ul class="skills-list">
+                             <li><i class="fab fa-node-js"></i> Node.js</li>
+                             <li><i class="fas fa-feather-alt"></i> Express.js</li>
+                             <!-- Add Python/Django/Flask if applicable -->
+                             <!-- <li><i class="fab fa-python"></i> Python</li> -->
+                             <!-- <li><i class="fas fa-flask"></i> Flask</li> -->
+                             <li><i class="fas fa-project-diagram"></i> REST APIs</li>
+                             <li><i class="fas fa-plug"></i> GraphQL</li>
+                        </ul>
+                    </div>
+                     <div class="skill-category">
+                        <h3><i class="fas fa-database"></i> Databases</h3>
+                        <ul class="skills-list">
+                            <li><i class="fas fa-database"></i> SQL</li>
+                            <li><i class="fas fa-database"></i> PostgreSQL</li>
+                            <li><i class="fas fa-leaf"></i> MongoDB</li>
+                            <li><i class="fas fa-fire"></i> Firebase</li>
+                            <li><i class="fas fa-cloud"></i> ORMs</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category">
+                        <h3><i class="fas fa-tools"></i> Tools &amp; Concepts</h3>
+                        <ul class="skills-list">
+                             <li><i class="fab fa-git-alt"></i> Git/GitHub</li>
+                             <li><i class="fab fa-docker"></i> Docker</li>
+                             <li><i class="fas fa-terminal"></i> CLI</li>
+                             <li><i class="fas fa-cloud-upload-alt"></i> Deployment</li>
+                             <li><i class="fas fa-vial"></i> Testing</li>
+                             <li><i class="fas fa-users-cog"></i> Agile/Scrum</li>
+                             <li><i class="fas fa-network-wired"></i> CI/CD</li>
+                             <li><i class="fas fa-cogs"></i> DevOps Basics</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         <!-- Simple 3D Model Showcase -->
+         <section id="tech-showcase" class="section-padding text-center">
+             <div class="container">
+                 <h2>Visualizing Tech</h2>
+                 <p>Bringing ideas to life, layer by layer.</p>
+                <!-- Replace src with a link to your chosen free .glb or .gltf model -->
+                <!-- Example source - REMEMBER TO CHECK LICENSE & ATTRIBUTE IF NEEDED -->
+                 <model-viewer
+                     src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+                     alt="A 3D model representing technology or code"
+                     auto-rotate
+                     camera-controls
+                     shadow-intensity="1"
+                     exposure="1"
+                    style="--mv-environment-image: neutral;"> <!-- Optional neutral lighting -->
+                    <!-- Add attribution here if required by the model's license -->
+                     <!-- <div class="attribution" slot="attribution">
+                        "Model Name" by Author is licensed under CC BY 4.0.
+                     </div> -->
+                 </model-viewer>
+             </div>
+         </section>
+
+
+        <section id="projects" class="section-padding">
+            <div class="container">
+                <h2>Featured Projects</h2>
+                <div class="projects-grid">
+                    <!-- Project Card 1 -->
+                    <article class="project-card">
+                        <div class="project-card-image">
+                            <img src="https://via.placeholder.com/400x220/3a3d5a/e0e5f0?text=Project+Alpha" alt="Screenshot of Project Alpha">
+                        </div>
+                        <div class="project-card-content">
+                            <h4>Project Alpha Title</h4>
+                            <p>Brief description of the project, highlighting key features and the problem it solves. Keep it concise and engaging.</p>
+                            <div class="project-tech">
+                                <span>React</span> <span>Node.js</span> <span>MongoDB</span> <span>Express</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" target="_blank" rel="noopener noreferrer" title="Live Demo"><i class="fas fa-external-link-alt"></i></a>
+                                <a href="#" target="_blank" rel="noopener noreferrer" title="GitHub Repository"><i class="fab fa-github"></i></a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Project Card 2 -->
+                    <article class="project-card">
+                        <div class="project-card-image">
+                            <img src="https://via.placeholder.com/400x220/4a4d6a/e0e5f0?text=Project+Beta" alt="Screenshot of Project Beta">
+                        </div>
+                         <div class="project-card-content">
+                            <h4>Project Beta Name</h4>
+                            <p>Another project description focusing on different aspects or technologies used. Emphasize your role or contribution.</p>
+                            <div class="project-tech">
+                                <span>Vue.js</span> <span>Firebase</span> <span>CSS Grid</span> <span>API Intergration</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" target="_blank" rel="noopener noreferrer" title="Live Demo"><i class="fas fa-external-link-alt"></i></a>
+                                <a href="#" target="_blank" rel="noopener noreferrer" title="GitHub Repository"><i class="fab fa-github"></i></a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Project Card 3 -->
+                     <article class="project-card">
+                        <div class="project-card-image">
+                            <img src="https://via.placeholder.com/400x220/2a2d40/e0e5f0?text=Project+Gamma" alt="Screenshot of Project Gamma">
+                        </div>
+                         <div class="project-card-content">
+                            <h4>Project Gamma Feature</h4>
+                            <p>Describe a third project, maybe a backend-focused one or something using a different framework or database.</p>
+                            <div class="project-tech">
+                                <span>Node.js</span> <span>PostgreSQL</span> <span>Docker</span> <span>REST API</span>
+                            </div>
+                            <div class="project-links">
+                                <!-- <a href="#" target="_blank" rel="noopener noreferrer" title="Live Demo"><i class="fas fa-external-link-alt"></i></a> -->
+                                <a href="#" target="_blank" rel="noopener noreferrer" title="GitHub Repository"><i class="fab fa-github"></i></a>
+                            </div>
+                        </div>
+                    </article>
+                     <!-- Add more project cards as needed -->
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section-padding">
+            <div class="container">
+                <h2>Let's Connect <span class="highlight">&amp;</span> Build</h2>
+                 <p class="text-center" style="max-width: 600px; margin-left: auto; margin-right:auto;">Interested in collaborating or have a project in mind? Feel free to reach out!</p>
+                 <form action="#" method="post" class="contact-form"> <!-- Replace # with your form handler URL -->
+                    <div class="input-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                     <div class="input-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                     <div class="input-group">
+                        <label for="subject">Subject:</label>
+                        <input type="text" id="subject" name="subject">
+                    </div>
+                     <div class="input-group">
+                        <label for="message">Message:</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit">Send Message <i class="fas fa-paper-plane" style="margin-left: 8px;"></i></button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-links" aria-label="Social Media Links">
+                <!-- Replace # with your actual profile links -->
+                <a href="#" target="_blank" rel="noopener noreferrer" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="#" target="_blank" rel="noopener noreferrer" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" target="_blank" rel="noopener noreferrer" title="Twitter/X"><i class="fab fa-twitter"></i></a>
+                <!-- Add other relevant links like portfolio platforms -->
+            </div>
+            <p>&copy; <span id="currentYear"></span> Pritom Bhowmik. Forged with <i class="fas fa-fire" style="color: var(--primary-accent);"></i> and Code.</p>
+             <!-- Add 3D model attribution here if needed -->
+             <p class="attribution">
+                 <!-- Example: 3D Model "Example Asset" by Author licensed under CC BY 4.0 -->
+             </p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Simple Mobile Navigation Toggle ---
+        const navToggle = document.getElementById('navToggle');
+        const mainNav = document.getElementById('mainNav');
+
+        if (navToggle && mainNav) {
+            navToggle.addEventListener('click', () => {
+                mainNav.classList.toggle('active');
+                // Optional: Change hamburger icon to 'X'
+                const icon = navToggle.querySelector('i');
+                if (mainNav.classList.contains('active')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                    navToggle.setAttribute('aria-expanded', 'true');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                     navToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+             // Close nav when a link is clicked (optional)
+             mainNav.querySelectorAll('a').forEach(link => {
+                 link.addEventListener('click', () => {
+                     if(mainNav.classList.contains('active')){
+                        mainNav.classList.remove('active');
+                        navToggle.querySelector('i').classList.remove('fa-times');
+                        navToggle.querySelector('i').classList.add('fa-bars');
+                        navToggle.setAttribute('aria-expanded', 'false');
+                     }
+                 });
+             });
+        }
+
+        // --- Smooth Scroll for Anchor Links ---
+         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                // Prevent default only if it's truly an internal link
+                if (this.getAttribute('href').startsWith('#') && this.getAttribute('href').length > 1) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    // Use try/catch in case the selector is invalid
+                    try {
+                         const targetElement = document.querySelector(targetId);
+                         if(targetElement){
+                            // Calculate offset for sticky header
+                            const headerOffset = document.querySelector('.main-header')?.offsetHeight || 70;
+                            const elementPosition = targetElement.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                         }
+                    } catch (error) {
+                        console.error("Error finding element for smooth scroll:", error);
+                    }
+                }
+            });
+        });
+
+
+        // --- Simple Parallax for Hero Background (Adjust multiplier for effect strength) ---
+        const heroSection = document.querySelector('.hero');
+        if (heroSection) {
+             window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                // Adjust the 0.3 multiplier to control the speed/intensity
+                const parallaxValue = -(scrolled * 0.2);
+                // Apply transformation only if background-attachment is not fixed
+                // Or apply directly if using background-attachment: scroll;
+                if (window.getComputedStyle(heroSection).backgroundAttachment !== 'fixed') {
+                    heroSection.style.backgroundPositionY = parallaxValue + 'px';
+                }
+            });
+        }
+
+
+        // --- Update Footer Year ---
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    </script>
+
+</body>
+</html>
